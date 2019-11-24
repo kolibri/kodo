@@ -19,14 +19,14 @@ class StateResolverTest extends TestCase
 
     public function testResolvingOpenState()
     {
-        static::assertSame('open', $this->resolver->resolveState($this->task));
+        static::assertSame('open', $this->resolver->resolveState('name'));
     }
 
     public function testResolvingProgressState()
     {
         $this->repo->method('hasBranch')->willReturn(true);
 
-        static::assertSame('in progress', $this->resolver->resolveState($this->task));
+        static::assertSame('in progress', $this->resolver->resolveState('name'));
     }
 
     public function testResolvingDoneState()
@@ -34,7 +34,7 @@ class StateResolverTest extends TestCase
         $this->repo->method('hasBranch')->willReturn(true);
         $this->repo->method('hasBranchMerged')->willReturn(true);
 
-        static::assertSame('done', $this->resolver->resolveState($this->task));
+        static::assertSame('done', $this->resolver->resolveState('name'));
     }
 
     protected function setUp()

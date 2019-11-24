@@ -32,13 +32,7 @@ class ProjectCommand extends Command
         $tasks = $this->project->getTasks();
 
         foreach ($tasks as $task) {
-            $output->writeln(
-                sprintf(
-                    '%s (%s)',
-                    $task->getTitle(),
-                    $this->stateResolver->resolveState($task)
-                )
-            );
+            $output->writeln($task->getTitleWithState());
         }
 
         return 0;

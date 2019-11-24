@@ -9,11 +9,13 @@ class Project
 {
     private $projectDir;
     private $finder;
+    private $stateResolver;
 
-    public function __construct(string $projectDir, Finder $finder)
+    public function __construct(string $projectDir, Finder $finder, StateResolver $stateResolver)
     {
         $this->projectDir = $projectDir;
         $this->finder = $finder;
+        $this->stateResolver = $stateResolver;
     }
 
     /** @return Task[] */
@@ -23,7 +25,8 @@ class Project
         $files = $this->finder->files()->in($this->projectDir);
         $tasks = [];
         foreach ($files as $file) {
-            $tasks[] = new Task($file->getBasename('.md'), $file->getContents());
+            $basename = $file->getBasename('.md');
+            $tasks[] = new Task($basename, $file->getContents(), $this->stateResolver->resolveState($basename));
         }
 
         return $tasks;

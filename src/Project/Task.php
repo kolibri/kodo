@@ -6,11 +6,13 @@ class Task
 {
     private $basename;
     private $content;
+    private $status;
 
-    public function __construct(string $basename, string $content)
+    public function __construct(string $basename, string $content, string $status)
     {
         $this->basename = $basename;
         $this->content = $content;
+        $this->status = $status;
     }
 
     public function getTitle(): string
@@ -30,5 +32,19 @@ class Task
     public function getBasename()
     {
         return $this->basename;
+    }
+
+    public function getStatus(): string
+    {
+        return $this->status;
+    }
+
+    public function getTitleWithState(): string
+    {
+        return sprintf(
+            '%s (%s)',
+            $this->getTitle(),
+            $this->getStatus()
+        );
     }
 }

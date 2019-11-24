@@ -14,7 +14,6 @@ class FixtureRepo
     public function __construct(string $path)
     {
         $this->path = $path;
-        dump($this->path);
         $this->fs = new Filesystem();
     }
 
