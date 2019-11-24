@@ -1,0 +1,19 @@
+parameters:
+    repo_dir: '%env(APP_REPO_DIR)%'
+    project_dir: '%kernel.project_dir%/%env(APP_PROJECT_DIR)%'
+services:
+    _defaults:
+        autowire: true      # Automatically injects dependencies in your services.
+        autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
+        bind:
+            $projectDir: '%project_dir%'
+
+    App\:
+        resource: '../src/*'
+        exclude: '../src/{DependencyInjection,Entity,Migrations,Tests,Kernel.php}'
+    App\Controller\:
+        resource: '../src/Controller'
+        tags: ['controller.service_arguments']
+
+    Cz\Git\GitRepository:
+        $repository: '%repo_dir%'
