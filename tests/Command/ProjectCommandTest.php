@@ -2,11 +2,10 @@
 
 namespace App\Tests\Command;
 
-use Cz\Git\GitRepository;
+use App\Test\FixtureRepo;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Console\Tester\CommandTester;
-use Symfony\Component\Filesystem\Filesystem;
 
 /**
  * @coversNothing
@@ -15,14 +14,13 @@ class ProjectCommandTest extends KernelTestCase
 {
     private const CACHE_DIR = __DIR__.'/ProjectCommandTestDataCache';
 
-    private $repo;
-    private $fs;
     private $commandTester;
+    private $fixtureRepo;
 
     public function testExecute()
     {
         // initial adding of tasks
-        $this->modifyFilesInBranch(
+        $this->fixtureRepo->modifyFilesInBranch(
             [
                 'project/00-tests-green' => '# tests must be green',
                 'project/01-progress-state' => '# progress state is shown',
@@ -41,7 +39,7 @@ class ProjectCommandTest extends KernelTestCase
         );
 
         // create first branch ...
-        $this->modifyFilesInBranch(
+        $this->fixtureRepo->modifyFilesInBranch(
             [
                 'project/00-tests-green' => '# tests must be green, forever!',
             ],
@@ -58,8 +56,8 @@ class ProjectCommandTest extends KernelTestCase
         );
 
         // ... and merge it
-        $this->repo->checkout('master');
-        $this->repo->merge('00-tests-green');
+        $this->fixtureRepo->getRepo()->checkout('master');
+        $this->fixtureRepo->getRepo()->merge('00-tests-green');
 
         $this->assertLinesInOutput(
             [
@@ -70,7 +68,7 @@ class ProjectCommandTest extends KernelTestCase
         );
 
         // second branch, will result in all three states
-        $this->modifyFilesInBranch(
+        $this->fixtureRepo->modifyFilesInBranch(
             [
                 'project/00-progress-state' => '# See the progress state!',
             ],
@@ -87,26 +85,6 @@ class ProjectCommandTest extends KernelTestCase
         );
     }
 
-    private function modifyFilesInBranch(array $files, string $branch, string $message, bool $commit = true): void
-    {
-        if ('master' !== $branch) {
-            $this->repo->createBranch($branch);
-        }
-        $this->repo->checkout($branch);
-
-        foreach ($files as $name => $content) {
-            $filePath = sprintf('%s/%s.md', self::CACHE_DIR, $name);
-            $this->fs->dumpFile($filePath, $content);
-            if ($commit) {
-                $this->repo->addFile($filePath);
-            }
-        }
-
-        if ($commit) {
-            $this->repo->commit($message);
-        }
-    }
-
     private function assertLinesInOutput(array $lines): void
     {
         $this->commandTester->execute([]);
@@ -117,16 +95,12 @@ class ProjectCommandTest extends KernelTestCase
         }
     }
 
-    protected function setUp()
+    protected function setUp(): void
     {
-        parent::setUp();
+        $this->fixtureRepo = new FixtureRepo(self::CACHE_DIR);
+        $this->fixtureRepo->init();
 
-        $this->fs = new Filesystem();
-        $this->fs->mkdir(self::CACHE_DIR);
-        $this->repo = GitRepository::init(self::CACHE_DIR);
-        $this->fs->dumpFile(self::CACHE_DIR.'/README.md', '# Readme');
-        $this->repo->addFile(self::CACHE_DIR.'/README.md');
-        $this->repo->commit('Inital commit');
+        parent::setUp();
 
         $kernel = static::createKernel();
         $app = new Application($kernel);
@@ -136,8 +110,7 @@ class ProjectCommandTest extends KernelTestCase
 
     protected function tearDown(): void
     {
-        $fs = new Filesystem();
-        $fs->remove(self::CACHE_DIR);
+        $this->fixtureRepo->remove();
         parent::tearDown();
     }
 }

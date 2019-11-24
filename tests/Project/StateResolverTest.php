@@ -8,10 +8,6 @@ use App\Project\Task;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
-/**
- * @internal
- * @coversNothing
- */
 class StateResolverTest extends TestCase
 {
     /** @var Repo|MockObject $repo */

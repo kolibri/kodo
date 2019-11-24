@@ -7,10 +7,6 @@ use Cz\Git\GitRepository;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
-/**
- * @internal
- * @coversNothing
- */
 class RepoTest extends TestCase
 {
     /** @var GitRepository|MockObject */

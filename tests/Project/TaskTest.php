@@ -5,10 +5,6 @@ namespace App\Tests\Project;
 use App\Project\Task;
 use PHPUnit\Framework\TestCase;
 
-/**
- * @internal
- * @coversNothing
- */
 class TaskTest extends TestCase
 {
     public function testGeneration()
