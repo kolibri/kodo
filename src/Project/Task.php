@@ -2,40 +2,33 @@
 
 namespace App\Project;
 
-use Symfony\Component\Finder\SplFileInfo;
-
 class Task
 {
-    private $file;
-    private $state;
+    private $basename;
+    private $content;
 
-    public function __construct(SplFileInfo $file)
+    public function __construct(string $basename, string $content)
     {
-        $this->file = $file;
-        $this->state = 'open';
+        $this->basename = $basename;
+        $this->content = $content;
     }
 
     public function getTitle(): string
     {
-        if (preg_match('/^\s*#\s+(.*)/', $this->file->getContents(), $matches)) {
+        if (preg_match('/^\s*#\s+(.*)/', $this->content, $matches)) {
             return $matches[1];
         }
 
-        return $this->file->getFilename();
+        return $this->basename;
     }
 
     public function getDescription(): string
     {
-        return $this->file->getContents();
-    }
-
-    public function getState(): string
-    {
-        return $this->state;
+        return $this->content;
     }
 
     public function getBasename()
     {
-        return $this->file->getBasename('.md');
+        return $this->basename;
     }
 }

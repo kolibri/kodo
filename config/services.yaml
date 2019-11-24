@@ -17,3 +17,9 @@ services:
 
     Cz\Git\GitRepository:
         $repository: '%repo_dir%'
+
+    App\Project\Project:
+        $finder: '@app.project_finder'
+
+    app.project_finder:
+        class: Symfony\Component\Finder\Finder

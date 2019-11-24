@@ -3,9 +3,7 @@
 namespace App\Tests\Project;
 
 use App\Project\Task;
-use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
-use Symfony\Component\Finder\SplFileInfo;
 
 /**
  * @internal
@@ -21,15 +19,10 @@ class TaskTest extends TestCase
 foobar
 EOF;
 
-        /** @var SplFileInfo|MockObject $file */
-        $file = $this->createMock(SplFileInfo::class);
-        $file->method('getContents')->willReturn($content);
-        $file->method('getBasename')->willReturn('testtask');
-        $task = new Task($file);
+        $task = new Task('testtask', $content);
 
         static::assertSame('This is test', $task->getTitle());
         static::assertSame($content, $task->getDescription());
-        static::assertSame('open', $task->getState());
         static::assertSame('testtask', $task->getBasename());
     }
 }

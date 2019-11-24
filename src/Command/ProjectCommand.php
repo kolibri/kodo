@@ -2,25 +2,23 @@
 
 namespace App\Command;
 
+use App\Project\Project;
 use App\Project\StateResolver;
-use App\Project\Task;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Finder\Finder;
-use Symfony\Component\Finder\SplFileInfo;
 
 class ProjectCommand extends Command
 {
     protected static $defaultName = 'app:project';
 
-    private $projectDir;
+    private $project;
     private $stateResolver;
 
-    public function __construct(string $projectDir, StateResolver $stateResolver, string $name = null)
+    public function __construct(Project $project, StateResolver $stateResolver, string $name = null)
     {
         parent::__construct($name);
-        $this->projectDir = $projectDir;
+        $this->project = $project;
         $this->stateResolver = $stateResolver;
     }
 
@@ -31,12 +29,9 @@ class ProjectCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $finder = new Finder();
-        /** @var SplFileInfo[] $files */
-        $files = $finder->files()->in($this->projectDir);
+        $tasks = $this->project->getTasks();
 
-        foreach ($files as $file) {
-            $task = new Task($file);
+        foreach ($tasks as $task) {
             $output->writeln(
                 sprintf(
                     '%s (%s)',
