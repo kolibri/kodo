@@ -1,0 +1,7 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <h1>Overview</h1>
+
+    {{ render(controller('App\\Controller\\ProjectController::list')) }}
+{% endblock body %}

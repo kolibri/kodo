@@ -17,7 +17,7 @@ class FixtureRepo
         $this->fs = new Filesystem();
     }
 
-    public function getRepo()
+    public function getRepo(): GitRepository
     {
         return $this->repo;
     }
@@ -26,6 +26,7 @@ class FixtureRepo
     {
         $this->fs->mkdir($this->path);
         $this->repo = GitRepository::init($this->path);
+        // Add inital commit to prevent handling with empty git repo.
         $this->fs->dumpFile($this->path.'/README.md', '# Readme');
         $this->repo->addFile($this->path.'/README.md');
         $this->repo->commit('Inital commit');
@@ -50,6 +51,12 @@ class FixtureRepo
         if ($commit) {
             $this->repo->commit($message);
         }
+    }
+
+    public function mergeIntoMaster(string $branch): void
+    {
+        $this->repo->checkout('master');
+        $this->repo->merge($branch);
     }
 
     public function remove(): void

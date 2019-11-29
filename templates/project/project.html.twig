@@ -1,0 +1,36 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <h1>{{ project.repoDir }}</h1>
+
+    <ul>
+        {% for lane in project.lanes %}
+            <li class="lane" data-lane-name="{{ lane.name }}">
+                <h2>{{ lane.name }}</h2>
+
+                <h3>Open</h3>
+                <ul class="tasks state-open">
+                    {% for task in lane.tasks|filter(t => 'open' == t.status) %}
+                        <li class="task state-{{ task.status }}">{{ task.titleWithState }}</li>
+                    {% endfor %}
+                </ul>
+
+                <h3>In Progress</h3>
+                <ul class="tasks state-progress">
+                    {% for task in lane.tasks|filter(t => 'in progress' == t.status) %}
+                        <li class="task state-{{ task.status }}">{{ task.titleWithState }}</li>
+                    {% endfor %}
+                </ul>
+
+                <h3>Done</h3>
+                <ul class="tasks state-done">
+                    {% for task in lane.tasks|filter(t => 'done' == t.status) %}
+                        <li class="task state-{{ task.status }}">{{ task.titleWithState }}</li>
+                    {% endfor %}
+                </ul>
+
+            </li>
+        {% endfor %}
+
+    </ul>
+{% endblock body %}

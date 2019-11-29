@@ -5,21 +5,44 @@ Workflow driven task management.
 *ATTENTION*: This is currently just a playground to tests concepts, bring some "but it is possible" in the game and so son.
 So, don't expect running software or even a full concept. This is just a draft of some ideas with some approaches to check, if it is possible.
 
+## Setup & running tests
 
+```bash
+composer install
+make test
+```
 
-## Problem to solve:
+## Use-Case, or the problem to solve:
 
 Information about a project is usually spread out through different portals.
 Code lives inside the repository, documentation inside an external wiki, task management is done by another tool, etc.
 The Idea ist, to bring them all into one place: The code repository.
 
-## First concepts
+## Concept, or the Idea
 
-1. Define a directory (default is `project`) and place markdown files for the tasks you have.
-2. Create a branch names after the tasks filename. This will mark the task as "in progress"
-3. Merging the branch into the `master` branch will mark the task as "done"
+Main data source should be the repository itself. Starting with a directory structure like this
 
-All the information about a tasks state is fetched from the repository itself, so no need for any external database.
+```
+.
+├── README.md
+├── tasks
+│   ├── sprint
+│   │   └── 002-add-feature.md
+│   ├── deployed
+│   │   └── 000-tests-green.md
+│   └── backlog
+│       └── 004-we-will-do-it.md
+└── src
+
+```
+You should already have all you need: Different lanes are just directories, where some tasks files live.
+You might notice, that there is no "in progress" or "in review" lane, and this is ok, as the idea is, to get these states based on the repository informations:
+
+E.g you create a branch `sprint/002-add-feature`, this task will be recognized as "in progress".
+Merge this branch, and this tasks is "done" and can move to the next lane. No manual moving of tasks in an external system required.
+
+There might be more "states", that can be applied to a task (like the mentioned "in review"). It is part of this prototype, how to define and detect these states.
+
 
 ## Next steps
 
@@ -53,7 +76,8 @@ Another setup of lanes could be:
     Current (tasks, that should be done next)
     Releases (for the finished tasks, that are deployed)
 
-And yes, the idea is, to possibly include the whole project into the "creating tasks" Task.
+And yes, the idea is, to possibly include the whole team into the "creating tasks" Task. The result will be better task descriptions
+
 
 ### Definition of Done as a Script
 
@@ -84,11 +108,12 @@ I'll guess, we will have two parts:
 1. A online platform, to show all the informations in a nice and clean way, useable by non devs.
     Will use a copy of the repository
 2. A CLI Tool, that runs on the devs machine.
-    Will use the actual repository on the devs machine
+    Will use the actual repository on the devs machine (by default, with option to define the path to the target repo)
 
 ## Problems without solution
 
-Pull requests are outside of the system
-    APIs to github/gitlab/etc
+- Pull requests are outside of the system
+    - APIs to github/gitlab/etc
     
-Local command
+- Local command
+    - PHP might not be the right tool for this ;)

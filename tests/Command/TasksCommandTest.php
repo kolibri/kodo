@@ -10,7 +10,7 @@ use Symfony\Component\Console\Tester\CommandTester;
 /**
  * @coversNothing
  */
-class ProjectCommandTest extends KernelTestCase
+class TasksCommandTest extends KernelTestCase
 {
     private const CACHE_DIR = __DIR__.'/ProjectCommandTestDataCache';
 
@@ -22,14 +22,13 @@ class ProjectCommandTest extends KernelTestCase
         // initial adding of tasks
         $this->fixtureRepo->modifyFilesInBranch(
             [
-                'project/00-tests-green' => '# tests must be green',
-                'project/01-progress-state' => '# progress state is shown',
-                'project/02-done-state' => '# progress state is shown',
+                'project/plan/00-tests-green' => '# tests must be green',
+                'project/plan/01-progress-state' => '# progress state is shown',
+                'project/plan/02-done-state' => '# progress state is shown',
             ],
             'master',
             'added todos'
         );
-
         $this->assertLinesInOutput(
             [
                 'tests must be green (open)',
@@ -41,12 +40,11 @@ class ProjectCommandTest extends KernelTestCase
         // create first branch ...
         $this->fixtureRepo->modifyFilesInBranch(
             [
-                'project/00-tests-green' => '# tests must be green, forever!',
+                'project/plan/00-tests-green' => '# tests must be green, forever!',
             ],
-            '00-tests-green',
+            'plan/00-tests-green',
             'tests done'
         );
-
         $this->assertLinesInOutput(
             [
                 'tests must be green, forever! (in progress)',
@@ -56,9 +54,7 @@ class ProjectCommandTest extends KernelTestCase
         );
 
         // ... and merge it
-        $this->fixtureRepo->getRepo()->checkout('master');
-        $this->fixtureRepo->getRepo()->merge('00-tests-green');
-
+        $this->fixtureRepo->mergeIntoMaster('plan/00-tests-green');
         $this->assertLinesInOutput(
             [
                 'tests must be green, forever! (done)',
@@ -70,12 +66,11 @@ class ProjectCommandTest extends KernelTestCase
         // second branch, will result in all three states
         $this->fixtureRepo->modifyFilesInBranch(
             [
-                'project/00-progress-state' => '# See the progress state!',
+                'project/plan/01-progress-state' => '# See the progress state!',
             ],
-            '00-progress-state',
+            'plan/01-progress-state',
             'progress over'
         );
-
         $this->assertLinesInOutput(
             [
                 'tests must be green, forever! (done)',
@@ -87,7 +82,7 @@ class ProjectCommandTest extends KernelTestCase
 
     private function assertLinesInOutput(array $lines): void
     {
-        $this->commandTester->execute([]);
+        $this->commandTester->execute(['--repo' => self::CACHE_DIR, '--tasks' => 'project']);
         $output = $this->commandTester->getDisplay();
 
         foreach ($lines as $line) {
@@ -104,7 +99,7 @@ class ProjectCommandTest extends KernelTestCase
 
         $kernel = static::createKernel();
         $app = new Application($kernel);
-        $command = $app->find('app:project');
+        $command = $app->find('app:tasks');
         $this->commandTester = new CommandTester($command);
     }
 

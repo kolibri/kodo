@@ -15,3 +15,4 @@
 ###< symfony/phpunit-bridge ###
 vendor
 .php_cs.cache
+example_projects/*

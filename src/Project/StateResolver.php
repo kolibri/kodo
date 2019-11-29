@@ -13,13 +13,13 @@ class StateResolver
         $this->repo = $repo;
     }
 
-    public function resolveState(string $basename): string
+    public function resolveState(Task $task): string
     {
-        if ($this->repo->hasBranchMerged($basename)) {
+        if ($this->repo->hasBranchMerged($task->getBranchname())) {
             return 'done';
         }
 
-        if ($this->repo->hasBranch($basename)) {
+        if ($this->repo->hasBranch($task->getBranchname())) {
             return 'in progress';
         }
 

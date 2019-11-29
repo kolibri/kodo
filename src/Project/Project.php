@@ -7,28 +7,61 @@ use Symfony\Component\Finder\SplFileInfo;
 
 class Project
 {
-    private $projectDir;
-    private $finder;
+    private $repoDir;
+    private $tasksDir;
     private $stateResolver;
 
-    public function __construct(string $projectDir, Finder $finder, StateResolver $stateResolver)
+    public function __construct(string $repoDir, string $projectDir, StateResolver $stateResolver)
     {
-        $this->projectDir = $projectDir;
-        $this->finder = $finder;
+        $this->repoDir = $repoDir;
+        $this->tasksDir = $projectDir;
         $this->stateResolver = $stateResolver;
     }
 
-    /** @return Task[] */
-    public function getTasks(): array
+    public function getRepoDir(): string
     {
-        /** @var SplFileInfo[] $files */
-        $files = $this->finder->files()->in($this->projectDir);
-        $tasks = [];
-        foreach ($files as $file) {
-            $basename = $file->getBasename('.md');
-            $tasks[] = new Task($basename, $file->getContents(), $this->stateResolver->resolveState($basename));
-        }
+        return $this->repoDir;
+    }
 
-        return $tasks;
+    public function getTasksDir(): string
+    {
+        return sprintf('%s/%s', $this->repoDir, $this->tasksDir);
+    }
+
+    /** @return Lane[] */
+    public function getLanes(): array
+    {
+        return array_map(
+            function (SplFileInfo $file) {
+                $basename = $file->getBasename();
+
+                return new Lane(
+                    $basename,
+                    $this->createTasks($file->getRealPath(), $file->getBasename())
+                );
+            },
+            iterator_to_array(
+                (new Finder())
+                    ->depth('== 0')
+                    ->directories()
+                    ->in($this->getTasksDir())
+            )
+        );
+    }
+
+    /** @return Task[] */
+    private function createTasks(string $directory, string $laneName): array
+    {
+        return array_map(
+            function (SplFileInfo $file) use ($laneName, $directory) {
+                $basename = $file->getBasename('.md');
+
+                $task = new Task($basename, $file->getContents(), $laneName);
+                $task->setStatus($this->stateResolver->resolveState($task));
+
+                return $task;
+            },
+            iterator_to_array((new Finder())->depth('== 0')->files()->in($directory))
+        );
     }
 }
