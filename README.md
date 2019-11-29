@@ -121,3 +121,12 @@ I'll guess, we will have two parts:
     
 - Local command
     - PHP might not be the right tool for this ;)
+
+- Task - User association
+    - Take users from commits
+    - Still a problem with `git checkout -b feature && Git push -u origin feature`, because then not new commit exists in the branch to fetch user from
+
+- Extra infos for tasks in branches other than master needs to be visible(??)
+
+- How to integrate some state like "deployed to test system, but not stage and prod"?
+
