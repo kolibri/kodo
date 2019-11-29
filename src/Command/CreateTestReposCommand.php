@@ -110,5 +110,7 @@ class CreateTestReposCommand extends Command
             'current/05-not-done-yet',
             'did it'
         );
+
+        $fixtureRepo->getRepo()->checkout('master');
     }
 }

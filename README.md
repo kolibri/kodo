@@ -1,15 +1,16 @@
-# SFPROJECT
+# KoDo
 
 Workflow driven task management.
 
-*ATTENTION*: This is currently just a playground to tests concepts, bring some "but it is possible" in the game and so son.
+*ATTENTION*: This is currently just a playground/prototype to tests concepts, bring some "but it is possible" in the game and so on.
 So, don't expect running software or even a full concept. This is just a draft of some ideas with some approaches to check, if it is possible.
 
 ## Setup & running tests
 
 ```bash
 composer install
-make test
+make create-fixtures
+make
 ```
 
 ## Use-Case, or the problem to solve:
@@ -18,7 +19,10 @@ Information about a project is usually spread out through different portals.
 Code lives inside the repository, documentation inside an external wiki, task management is done by another tool, etc.
 The Idea ist, to bring them all into one place: The code repository.
 
-## Concept, or the Idea
+Main issue here are the tasks, as non devs, aka project managers also need access (with read/write/create possibilities).
+Also, state detection ("in progress", "is done", "in review") seems kinda hard or introduce a lot of overhead.
+
+## Concept, or the idea
 
 Main data source should be the repository itself. Starting with a directory structure like this
 
